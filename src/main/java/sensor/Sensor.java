@@ -1,17 +1,9 @@
 package sensor;
 
-import processing.centrifuge.Centrifuge;
+public class Sensor implements IObserver {
 
-public class Sensor {
-    private Centrifuge centrifuge;
-
-    public void watch(Centrifuge centrifuge) {
-        this.centrifuge = centrifuge;
+    @Override
+    public void update(IObservable observable, Object arg) {
+        if ()
     }
-
-    public void detectMatterAdded() {
-        centrifuge.turnOn();
-    }
-
-
 }

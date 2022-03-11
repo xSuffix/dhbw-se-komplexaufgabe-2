@@ -5,5 +5,5 @@ public interface IObservable {
 
     void removeObserver(IObserver observer);
 
-    void update(IObservable observable, Object arg);
+    void notifyObservers(Object arg);
 }
