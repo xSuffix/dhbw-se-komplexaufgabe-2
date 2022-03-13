@@ -3,19 +3,23 @@ import main.Utility;
 import material.AcidStorage;
 import org.junit.jupiter.api.*;
 import processing.centrifuge.Centrifuge;
-import processing.filter.IFilter;
+import processing.filter.*;
 import processing.pl.PL;
 import processing.pl.PL01;
 import processing.pl.PL02;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 
 public class TestApplication {
-    private final String context = Configuration.INSTANCE.testContext;
+    private final Configuration config = Configuration.INSTANCE;
+    private final String context = config.testContext;
+
     private AcidStorage acidStorage;
     private Centrifuge centrifuge;
 
@@ -37,8 +41,11 @@ public class TestApplication {
         String matterNotContainingGold = matterContainingGold.replace("G", "K");
         assertTrue(matterContainingGold.contains("G"));
 
+
         PL pl = new PL01(new PL02());
+        Utility.logInfo(context, String.format("Processing matter with gold: %s", Utility.analyseMatter(matterContainingGold)));
         pl.process(matterContainingGold, acidStorage, centrifuge);
+        Utility.logInfo(context, String.format("Processing matter without gold: %s", Utility.analyseMatter(matterNotContainingGold)));
         pl.process(matterNotContainingGold, acidStorage, centrifuge);
 
         List<IFilter> acidFilters = pl.getAcidFilters();
@@ -53,12 +60,26 @@ public class TestApplication {
     @Test
     @Order(2)
     public void testFilter() {
+        List<IFilter> filters = new ArrayList<>();
+        filters.add(new FilterAcid());
+        filters.add(new FilterGold());
+        filters.add(new FilterTrash());
+        filters.add(new FilterStone());
 
+        String matter = "KKAABBCCGGXXE";
+        Utility.logInfo(context, String.format("Matter contains %s", Utility.analyseMatter(matter)));
+
+        for (IFilter filter : filters) {
+            matter = filter.apply(matter);
+            CharSequence filteredAtoms = filter.getSetting();
+            Utility.logInfo(context, String.format("After filtering out %s, matter now contains %s", filteredAtoms, Utility.analyseMatter(matter)));
+            assertFalse(matter.contains(filteredAtoms));
+        }
     }
 
     @Test
     @Order(3)
     public void testObserver() {
-
+        
     }
 }
