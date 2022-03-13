@@ -12,6 +12,7 @@ import processing.filter.*;
 import processing.pl.PL;
 import processing.pl.PL01;
 import processing.pl.PL02;
+import processing.sensor.Sensor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +26,7 @@ public class TestApplication {
     private final String context = config.testContext;
 
     /**
-     * Check if PL01 correctly passes matter with gold to its successor
+     * Check if PL01 correctly passes matter with gold to its successor.
      * This is tested by processing acid matter with and without gold
      * and then checking if both acid filters contain acid
      */
@@ -55,6 +56,11 @@ public class TestApplication {
         }
     }
 
+    /**
+     * Check if Filters correctly filter matter.
+     * Matter goes through a list of Filters and after each filter it will be checked,
+     * if matter still contains supposedly filtered atoms
+     */
     @Test
     @Order(2)
     public void testFilter() {
@@ -75,18 +81,29 @@ public class TestApplication {
         }
     }
 
+    /**
+     * Check if IObservable notifies IObserver.
+     * This is tested by executing Sensor.notifyObservers(arg).
+     * It is supposed to notify Worker Sam who will then process the only Block in the Storage.
+     * If it succeeded, there should be not Block left to take.
+     */
     @Test
     @Order(3)
     public void testObserver() {
         AcidStorage acidStorage = new AcidStorage();
         BlockStorage blockStorage = new BlockStorage(1);
         PL pl = new PL01(new PL02());
+
         Centrifuge centrifuge = new Centrifuge();
+        Sensor sensor = new Sensor();
+        centrifuge.registerObserver(sensor);
+        sensor.registerObserver(centrifuge);
 
         Worker sam = new Worker(acidStorage, blockStorage, pl, centrifuge);
+        sensor.registerObserver(sam);
         sam.fillAll();
 
-        centrifuge.insert("G");
+        sensor.notifyObservers("stopped");
         assertEquals(0, blockStorage.takeBlocks(1).size());
     }
 }

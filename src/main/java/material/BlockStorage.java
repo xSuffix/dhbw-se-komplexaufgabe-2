@@ -18,7 +18,7 @@ public class BlockStorage {
     }
 
     public BlockStorage(int size) {
-        Utility.logInfo(context, String.format("Initializing | %d spaces, 0 filled", size));
+        Utility.logInfo(context, String.format("Initializing | %s spaces, 0 filled", Utility.formatNumber(size)));
         storage = new Block[size];
     }
 
@@ -52,6 +52,6 @@ public class BlockStorage {
                 amountFilled++;
             }
         }
-        Utility.logInfo(context, String.format("Adding %s blocks with magic | Total: %s", amountFilled, storage.length));
+        Utility.logInfo(context, String.format("Adding %s blocks with magic | Total: %s", Utility.formatNumber(amountFilled), Utility.formatNumber(storage.length)));
     }
 }

@@ -1,5 +1,8 @@
 package processing.sensor;
 
+import main.Configuration;
+import main.Utility;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,6 +32,7 @@ public class Sensor implements IObserver, IObservable {
         else if (arg.equals("empty")) msg = "stop";
 
         if (!msg.equals("")) {
+            Utility.logInfo(Configuration.INSTANCE.sensorContext, String.format("Notification: %s", msg));
             for (IObserver subscriber : subscribers) {
                 subscriber.update(this, msg);
             }

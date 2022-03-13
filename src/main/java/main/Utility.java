@@ -57,6 +57,7 @@ public class Utility {
         if (Objects.equals(context, config.acidStorageContext) && !config.logAcidStorage) return false;
         else if (Objects.equals(context, config.centrifugeContext) && !config.logCentrifuge) return false;
         else if (Objects.equals(context, config.blockStorageContext) && !config.logBlockStorage) return false;
+        else if (Objects.equals(context, config.sensorContext) && !config.logSensor) return false;
         return !Objects.equals(context, config.testContext) || config.logTests;
     }
 

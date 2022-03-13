@@ -37,9 +37,11 @@ public enum Configuration {
     public final boolean logAcidStorage = false;
     public final boolean logBlockStorage = true;
     public final boolean logCentrifuge = true;
+    public final boolean logSensor = true;
 
     public final String testContext = "Test";
     public final String acidStorageContext = "AcidStorage";
     public final String blockStorageContext = "BlockStorage";
     public final String centrifugeContext = "Centrifuge";
+    public final String sensorContext = "Sensor";
 }
