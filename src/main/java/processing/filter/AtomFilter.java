@@ -1,10 +1,10 @@
 package processing.filter;
 
-public abstract class Filter implements IFilter {
+public abstract class AtomFilter implements IFilter {
     private final StringBuilder container = new StringBuilder();
     private final String filterSetting;
 
-    public Filter(String filterSetting) {
+    public AtomFilter(String filterSetting) {
         this.filterSetting = filterSetting;
     }
 

@@ -6,8 +6,6 @@ import processing.filter.FilterGold;
 import processing.filter.FilterStone;
 import processing.filter.FilterTrash;
 import processing.filter.IFilter;
-import processing.sensor.IObservable;
-import processing.sensor.IObserver;
 
 import java.util.HashSet;
 import java.util.Objects;

@@ -4,10 +4,10 @@ import material.AcidStorage;
 import material.Block;
 import material.BlockStorage;
 import processing.centrifuge.Centrifuge;
+import processing.centrifuge.IObservable;
+import processing.centrifuge.IObserver;
 import processing.filter.IFilter;
 import processing.pl.PL;
-import processing.sensor.IObservable;
-import processing.sensor.IObserver;
 
 import java.util.Objects;
 

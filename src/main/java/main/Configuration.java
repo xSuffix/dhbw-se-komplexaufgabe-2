@@ -4,9 +4,12 @@ public enum Configuration {
     INSTANCE;
 
     // Storage
-    /*  Deviation from specification:
-        set to lower number, so you don't have to wait > 5 hours or get OutOfMemory Exception; Set to 1000000 according to specification
-        could have generated the blocks JIT without any issues but that wouldn't be 'good' enough
+    /*  Set to lower number if you don't want to wait > 5 hours or get OutOfMemoryError
+
+        According to specification: 1000000
+        Recommended by author: 10000
+
+        I could have generated the blocks JIT without any issues but that wouldn't be 'good' enough
         for someone who wants a battery to be implemented as a 3d array, right?
     */
     public final int numberOfBlocks = 10000;

@@ -1,6 +1,6 @@
 package processing.filter;
 
-public class FilterStone extends Filter {
+public class FilterStone extends AtomFilter {
 
     public FilterStone() {
         super("AB");

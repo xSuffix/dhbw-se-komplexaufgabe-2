@@ -20,7 +20,7 @@ public class PL {
         this.successor = successor;
     }
 
-    protected boolean containsGold(String matter) {
+    public boolean containsGold(String matter) {
         return matter.contains(String.valueOf(Configuration.INSTANCE.gold));
     }
 

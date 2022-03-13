@@ -3,9 +3,9 @@ package main;
 import material.AcidStorage;
 import material.BlockStorage;
 import processing.centrifuge.Centrifuge;
+import processing.centrifuge.Sensor;
 import processing.pl.PL01;
 import processing.pl.PL02;
-import processing.sensor.Sensor;
 
 import java.util.Arrays;
 
@@ -22,6 +22,9 @@ public class Application {
 
         Utility.logInfo(context, String.format("BlockStorage(%d), Block(%s)", config.numberOfBlocks, Arrays.toString(config.blockSize)));
         Utility.logInfo(context, String.format("Processing %s atoms, ETA: %s seconds", Utility.formatNumber(numberOfAtoms), Utility.formatNumber(timeInSeconds)));
+        if (timeInSeconds > 500)
+            Utility.logInfo(context, "This will take some time. You might want to lower numberOfBlocks or blockSize in Configuration");
+        System.out.println();
 
         Sensor sensor = new Sensor();
         Centrifuge centrifuge = new Centrifuge();

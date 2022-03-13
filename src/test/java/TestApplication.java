@@ -8,11 +8,11 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import processing.centrifuge.Centrifuge;
+import processing.centrifuge.Sensor;
 import processing.filter.*;
 import processing.pl.PL;
 import processing.pl.PL01;
 import processing.pl.PL02;
-import processing.sensor.Sensor;
 
 import java.util.ArrayList;
 import java.util.List;

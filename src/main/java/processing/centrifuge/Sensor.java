@@ -1,4 +1,4 @@
-package processing.sensor;
+package processing.centrifuge;
 
 import main.Configuration;
 import main.Utility;

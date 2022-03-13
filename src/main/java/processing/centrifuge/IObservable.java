@@ -1,4 +1,4 @@
-package processing.sensor;
+package processing.centrifuge;
 
 public interface IObservable {
     void registerObserver(IObserver observer);
