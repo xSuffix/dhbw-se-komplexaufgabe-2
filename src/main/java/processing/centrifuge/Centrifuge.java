@@ -24,11 +24,10 @@ public class Centrifuge implements IObservable {
 
     private final ScheduledExecutorService controller = Executors.newScheduledThreadPool(1);
     private final StringBuilder toProcess = new StringBuilder();
-    private ScheduledFuture<?> processTask;
-
     private final IFilter stoneFilter = new FilterStone();
     private final IFilter trashFilter = new FilterTrash();
     private final IFilter goldFilter = new FilterGold();
+    private ScheduledFuture<?> processTask;
 
     @Override
     public void registerObserver(IObserver observer) {
@@ -61,7 +60,7 @@ public class Centrifuge implements IObservable {
     public void turnOn() {
         if (processTask == null || processTask.isDone()) {
             Utility.logInfo(context, "Turning on");
-            processTask = controller.scheduleAtFixedRate(this::process, 0, 1, TimeUnit.SECONDS);
+            processTask = controller.scheduleAtFixedRate(this::process, 0, config.centrifugeMsPerStack, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -73,7 +72,7 @@ public class Centrifuge implements IObservable {
     }
 
     public void process() {
-        int amount = Math.min(Configuration.INSTANCE.atomsPerSecond, toProcess.length());
+        int amount = Math.min(Configuration.INSTANCE.centrifugeAtomsPerStack, toProcess.length());
         if (amount > 0) {
             String atoms = toProcess.substring(0, amount);
             toProcess.delete(0, amount);
@@ -82,7 +81,8 @@ public class Centrifuge implements IObservable {
             String noStone = stoneFilter.apply(atoms);
             String noTrash = trashFilter.apply(noStone);
             String noGold = goldFilter.apply(noTrash);
-            if (!noGold.isEmpty()) Utility.logError(context, String.format("Cannot process %s", Utility.analyseMatter(noGold)));
+            if (!noGold.isEmpty())
+                Utility.logError(context, String.format("Cannot process %s", Utility.analyseMatter(noGold)));
         } else if (config.autoOff) {
             notifyObservers(false);
         }

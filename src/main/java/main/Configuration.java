@@ -4,15 +4,16 @@ public enum Configuration {
     INSTANCE;
 
     // Storage
-    public final int storageSize = 10000;
+    public final int storageSize = 100000;
 
     // Blocks
     public final int[] blockSize = new int[]{10, 10, 10};
     public final int acidPerBlock = 5;
-    public final int blocksPerIteration = 10;
+    public final int blocksPerIteration = 1000;
 
     // Centrifuge
-    public final int atomsPerSecond = 5000;
+    public final int centrifugeAtomsPerStack = 50000;
+    public final int centrifugeMsPerStack = 1000;
     public final boolean autoOn = false;
     public final boolean autoOff = true;
 

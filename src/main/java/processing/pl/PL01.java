@@ -1,6 +1,5 @@
 package processing.pl;
 
-import main.Utility;
 import material.AcidStorage;
 import processing.centrifuge.Centrifuge;
 import processing.filter.FilterAcid;

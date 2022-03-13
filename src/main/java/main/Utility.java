@@ -40,7 +40,7 @@ public class Utility {
                 .sorted((e1, e2) -> e2.getValue() - e1.getValue())
                 .map(entry -> String.format("%.2f%% %s", (double) 100 * entry.getValue() / atoms, entry.getKey())).collect(Collectors.joining(", "));
 
-        return String.format("%s atoms (%s)", numberFormat.format(atoms), percentages);
+        return String.format("%s atoms (%s)", formatNumber(atoms), percentages);
     }
 
     public static void logInfo(String context, String message) {
@@ -56,6 +56,11 @@ public class Utility {
     private static boolean showLog(String context) {
         if (Objects.equals(context, config.acidStorageContext) && !config.logAcidStorage) return false;
         else if (Objects.equals(context, config.centrifugeContext) && !config.logCentrifuge) return false;
-        return !Objects.equals(context, config.blockStorageContext) || config.logBlockStorage;
+        else if (Objects.equals(context, config.blockStorageContext) && !config.logBlockStorage) return false;
+        return !Objects.equals(context, config.testContext) || config.logTests;
+    }
+
+    public static String formatNumber(int number) {
+        return numberFormat.format(number);
     }
 }

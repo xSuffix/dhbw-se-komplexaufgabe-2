@@ -1,18 +1,15 @@
 package main;
 
-import jdk.jshell.execution.Util;
 import material.AcidStorage;
 import material.Block;
+import material.BlockStorage;
 import processing.centrifuge.Centrifuge;
 import processing.filter.IFilter;
 import processing.pl.PL01;
 import processing.pl.PL02;
 import processing.sensor.Sensor;
-import material.BlockStorage;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class Application {
     private static final Configuration config = Configuration.INSTANCE;
@@ -26,8 +23,9 @@ public class Application {
 
     public static void main(String... args) {
         int numberOfAtoms = config.storageSize * config.blockSize[0] * config.blockSize[1] * config.blockSize[2];
+        int timeInSeconds = (int) (((double) numberOfAtoms / config.centrifugeAtomsPerStack) * ((double) config.centrifugeMsPerStack / 1000));
         Utility.logInfo(context, String.format("BlockStorage(%d), Block(%s)", config.storageSize, Arrays.toString(config.blockSize)));
-        Utility.logInfo(context, String.format("Processing %d atoms, ETA: %d seconds", numberOfAtoms, numberOfAtoms / config.atomsPerSecond));
+        Utility.logInfo(context, String.format("Processing %s atoms, ETA: %s seconds", Utility.formatNumber(numberOfAtoms), Utility.formatNumber(timeInSeconds)));
 
         fillAll();
         centrifuge.registerObserver(new Sensor());
@@ -42,6 +40,8 @@ public class Application {
 
     public static void processBlocks() {
         if (storage.countBlocks() > 0) {
+            System.out.println("");
+
             for (Block b : storage.takeBlocks(config.blocksPerIteration))
                 productionLine.process(b.addChemicalSubstance(acidStorage.takeAcidForBlock()), acidStorage, centrifuge);
 
@@ -55,6 +55,7 @@ public class Application {
     }
 
     public static void analyzeFilterContainers() {
+        System.out.println("");
         StringBuilder filtered = new StringBuilder();
         for (IFilter filter : centrifuge.getFilters()) filtered.append(filter.takeFiltered());
         Utility.logInfo(context, String.format("Done! Processed %s", Utility.analyseMatter(filtered.toString())));

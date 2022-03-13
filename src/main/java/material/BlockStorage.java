@@ -36,12 +36,12 @@ public class BlockStorage {
             i++;
         }
 
-        Utility.logInfo(context, String.format("Taking %d Blocks | Total: %d", taken, countBlocks()));
+        Utility.logInfo(context, String.format("Taking %s Blocks | Total: %s", Utility.formatNumber(taken), Utility.formatNumber(countBlocks())));
         return takenBlocks;
     }
 
-    public long countBlocks() {
-        return Arrays.stream(storage).filter(Objects::nonNull).count();
+    public int countBlocks() {
+        return (int) Arrays.stream(storage).filter(Objects::nonNull).count();
     }
 
     public void fillWithMagic() {
