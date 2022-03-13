@@ -11,8 +11,6 @@ import java.util.List;
 
 public class PL {
     private PL successor;
-    private AcidStorage acidStorage;
-    private Centrifuge centrifuge;
 
     public PL getSuccessor() {
         return successor;
@@ -20,22 +18,6 @@ public class PL {
 
     public void setSuccessor(PL successor) {
         this.successor = successor;
-    }
-
-    public AcidStorage getAcidStorage() {
-        return acidStorage;
-    }
-
-    public void setAcidStorage(AcidStorage acidStorage) {
-        this.acidStorage = acidStorage;
-    }
-
-    public Centrifuge getCentrifuge() {
-        return centrifuge;
-    }
-
-    public void setCentrifuge(Centrifuge centrifuge) {
-        this.centrifuge = centrifuge;
     }
 
     protected boolean containsGold(String matter) {

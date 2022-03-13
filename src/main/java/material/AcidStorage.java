@@ -16,9 +16,12 @@ public class AcidStorage {
 
     public void fillWithMagic() {
         int acidNeeded = Math.max(config.acidPerBlock * config.blocksPerIteration - storage.length(), 0);
-        Utility.logInfo(context, String.format("Adding %s acid with magic | Total: %s", acidNeeded, storage.length()));
+        fillWithMagic(acidNeeded);
+    }
 
-        char[] container = new char[acidNeeded];
+    public void fillWithMagic(int amount) {
+        Utility.logInfo(context, String.format("Adding %s acid with magic | Total: %s", amount, storage.length()));
+        char[] container = new char[amount];
         Arrays.fill(container, config.acid);
         storage.append(container);
     }

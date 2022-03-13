@@ -11,11 +11,6 @@ import java.util.List;
 public class PL02 extends PL {
     private final IFilter acidFilter = new FilterAcid();
 
-    public PL02() {
-        setAcidStorage(super.getAcidStorage());
-        setCentrifuge(super.getCentrifuge());
-    }
-
     @Override
     public void process(String matter, AcidStorage acidStorage, Centrifuge centrifuge) {
         if (containsGold(matter)) centrifuge.insert(acidFilter.apply(matter));
