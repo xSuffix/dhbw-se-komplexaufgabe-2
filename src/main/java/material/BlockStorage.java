@@ -14,7 +14,7 @@ public class BlockStorage {
 
 
     public BlockStorage() {
-        this(Configuration.INSTANCE.storageSize);
+        this(Configuration.INSTANCE.numberOfBlocks);
     }
 
     public BlockStorage(int size) {

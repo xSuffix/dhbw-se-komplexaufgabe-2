@@ -10,23 +10,24 @@ import processing.sensor.IObservable;
 import processing.sensor.IObserver;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class Centrifuge implements IObservable {
+public class Centrifuge implements IObservable, IObserver {
     private final Configuration config = Configuration.INSTANCE;
     private final String context = config.centrifugeContext;
 
     private final Set<IObserver> observers = new HashSet<>();
 
-    private final ScheduledExecutorService controller = Executors.newScheduledThreadPool(1);
     private final StringBuilder toProcess = new StringBuilder();
     private final IFilter stoneFilter = new FilterStone();
     private final IFilter trashFilter = new FilterTrash();
     private final IFilter goldFilter = new FilterGold();
+    private ScheduledExecutorService controller;
     private ScheduledFuture<?> processTask;
 
     @Override
@@ -50,6 +51,17 @@ public class Centrifuge implements IObservable {
         }
     }
 
+    @Override
+    public void update(IObservable observable, Object arg) {
+        if (Objects.equals(arg, true)) start();
+        else stop();
+    }
+
+    public void turnOn() {
+        Utility.logInfo(context, "Turning on");
+        controller = Executors.newScheduledThreadPool(2);
+    }
+
     public void insert(String matter) {
         if (matter != null && !matter.isEmpty()) {
             if (toProcess.isEmpty() && config.autoOn) notifyObservers(true);
@@ -57,22 +69,16 @@ public class Centrifuge implements IObservable {
         }
     }
 
-    public void turnOn() {
+    public void start() {
+        if (controller == null) turnOn();
         if (processTask == null || processTask.isDone()) {
-            Utility.logInfo(context, "Turning on");
-            processTask = controller.scheduleAtFixedRate(this::process, 0, config.centrifugeMsPerStack, TimeUnit.MILLISECONDS);
-        }
-    }
-
-    public void turnOff() {
-        if (processTask != null && !processTask.isDone()) {
-            Utility.logInfo(context, "Turning off");
-            processTask.cancel(false);
+            Utility.logInfo(context, "Starting");
+            processTask = controller.scheduleAtFixedRate(this::process, 0, config.centrifugeMsPerIteration, TimeUnit.MILLISECONDS);
         }
     }
 
     public void process() {
-        int amount = Math.min(Configuration.INSTANCE.centrifugeAtomsPerStack, toProcess.length());
+        int amount = Math.min(Configuration.INSTANCE.centrifugeAtomsPerIteration, toProcess.length());
         if (amount > 0) {
             String atoms = toProcess.substring(0, amount);
             toProcess.delete(0, amount);
@@ -88,11 +94,23 @@ public class Centrifuge implements IObservable {
         }
     }
 
+    public void stop() {
+        if (processTask != null && !processTask.isDone()) {
+            Utility.logInfo(context, "Stopping");
+            processTask.cancel(false);
+        }
+    }
+
     public IFilter[] getFilters() {
         return new IFilter[]{
                 stoneFilter,
                 trashFilter,
                 goldFilter
         };
+    }
+
+    public void turnOff() {
+        Utility.logInfo(context, "Turning off");
+        controller.shutdown();
     }
 }
