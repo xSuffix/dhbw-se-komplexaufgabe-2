@@ -1,7 +1,13 @@
 package processing.centrifuge;
 
-import sensor.IObservable;
-import sensor.IObserver;
+import main.Configuration;
+import main.Utility;
+import processing.filter.FilterGold;
+import processing.filter.FilterStone;
+import processing.filter.FilterTrash;
+import processing.filter.IFilter;
+import processing.sensor.IObservable;
+import processing.sensor.IObserver;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,10 +17,18 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class Centrifuge implements IObservable {
-    private final ScheduledExecutorService controller = Executors.newScheduledThreadPool(1);
-    private ScheduledFuture<?> processTask;
-    private final StringBuilder toProcess = new StringBuilder();
+    private final Configuration config = Configuration.INSTANCE;
+    private final String context = config.centrifugeContext;
+
     private final Set<IObserver> observers = new HashSet<>();
+
+    private final ScheduledExecutorService controller = Executors.newScheduledThreadPool(1);
+    private final StringBuilder toProcess = new StringBuilder();
+    private ScheduledFuture<?> processTask;
+
+    private final IFilter stoneFilter = new FilterStone();
+    private final IFilter trashFilter = new FilterTrash();
+    private final IFilter goldFilter = new FilterGold();
 
     @Override
     public void registerObserver(IObserver observer) {
@@ -39,27 +53,46 @@ public class Centrifuge implements IObservable {
 
     public void insert(String matter) {
         if (matter != null && !matter.isEmpty()) {
+            if (toProcess.isEmpty() && config.autoOn) notifyObservers(true);
             toProcess.append(matter);
-            notifyObservers(true);
         }
     }
 
     public void turnOn() {
-        if (processTask == null) {
-            System.out.println("[Centrifuge] Turning on");
+        if (processTask == null || processTask.isDone()) {
+            Utility.logInfo(context, "Turning on");
             processTask = controller.scheduleAtFixedRate(this::process, 0, 1, TimeUnit.SECONDS);
         }
     }
 
     public void turnOff() {
-        if (processTask != null) {
-            System.out.println("[Centrifuge] Turning off");
+        if (processTask != null && !processTask.isDone()) {
+            Utility.logInfo(context, "Turning off");
             processTask.cancel(false);
-            processTask = null;
         }
     }
 
     public void process() {
+        int amount = Math.min(Configuration.INSTANCE.atomsPerSecond, toProcess.length());
+        if (amount > 0) {
+            String atoms = toProcess.substring(0, amount);
+            toProcess.delete(0, amount);
+            Utility.logInfo(context, String.format("Processing %s", Utility.analyseMatter(atoms)));
 
+            String noStone = stoneFilter.apply(atoms);
+            String noTrash = trashFilter.apply(noStone);
+            String noGold = goldFilter.apply(noTrash);
+            if (!noGold.isEmpty()) Utility.logError(context, String.format("Cannot process %s", Utility.analyseMatter(noGold)));
+        } else if (config.autoOff) {
+            notifyObservers(false);
+        }
+    }
+
+    public IFilter[] getFilters() {
+        return new IFilter[]{
+                stoneFilter,
+                trashFilter,
+                goldFilter
+        };
     }
 }

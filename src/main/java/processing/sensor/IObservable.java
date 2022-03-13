@@ -1,4 +1,4 @@
-package sensor;
+package processing.sensor;
 
 public interface IObservable {
     void registerObserver(IObserver observer);

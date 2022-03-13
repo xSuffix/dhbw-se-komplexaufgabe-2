@@ -1,6 +1,6 @@
 package processing.filter;
 
-public class Filter02 implements IFilter {
+public class FilterTrash implements IFilter {
     private final StringBuilder container = new StringBuilder();
 
     @Override
@@ -15,7 +15,9 @@ public class Filter02 implements IFilter {
     }
 
     @Override
-    public String getFiltered() {
-        return container.toString();
+    public String takeFiltered() {
+        String filtered = container.toString();
+        container.setLength(0);
+        return filtered;
     }
 }

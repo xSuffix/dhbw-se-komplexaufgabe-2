@@ -1,12 +1,12 @@
 package processing.filter;
 
-public class Filter03 implements IFilter {
+public class FilterAcid implements IFilter {
     private final StringBuilder container = new StringBuilder();
 
     @Override
     public String apply(String matter) {
         StringBuilder unmatched = new StringBuilder();
-        String filter = "G";
+        String filter = "K";
         for (Character atom : matter.toCharArray()) {
             if (filter.indexOf(atom) == -1) unmatched.append(atom);
             else container.append(atom);
@@ -15,7 +15,9 @@ public class Filter03 implements IFilter {
     }
 
     @Override
-    public String getFiltered() {
-        return container.toString();
+    public String takeFiltered() {
+        String filtered = container.toString();
+        container.setLength(0);
+        return filtered;
     }
 }
