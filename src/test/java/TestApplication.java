@@ -1,7 +1,12 @@
 import main.Configuration;
 import main.Utility;
+import main.Worker;
 import material.AcidStorage;
-import org.junit.jupiter.api.*;
+import material.BlockStorage;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import processing.centrifuge.Centrifuge;
 import processing.filter.*;
 import processing.pl.PL;
@@ -11,23 +16,13 @@ import processing.pl.PL02;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 
 public class TestApplication {
     private final Configuration config = Configuration.INSTANCE;
     private final String context = config.testContext;
-
-    private AcidStorage acidStorage;
-    private Centrifuge centrifuge;
-
-    @BeforeEach
-    public void setup() {
-        acidStorage = new AcidStorage();
-        centrifuge = new Centrifuge();
-    }
 
     /**
      * Check if PL01 correctly passes matter with gold to its successor
@@ -40,6 +35,9 @@ public class TestApplication {
         String matterContainingGold = "KAABCAAGCA";
         String matterNotContainingGold = matterContainingGold.replace("G", "K");
         assertTrue(matterContainingGold.contains("G"));
+
+        AcidStorage acidStorage = new AcidStorage();
+        Centrifuge centrifuge = new Centrifuge();
 
 
         PL pl = new PL01(new PL02());
@@ -80,6 +78,15 @@ public class TestApplication {
     @Test
     @Order(3)
     public void testObserver() {
-        
+        AcidStorage acidStorage = new AcidStorage();
+        BlockStorage blockStorage = new BlockStorage(1);
+        PL pl = new PL01(new PL02());
+        Centrifuge centrifuge = new Centrifuge();
+
+        Worker sam = new Worker(acidStorage, blockStorage, pl, centrifuge);
+        sam.fillAll();
+
+        centrifuge.insert("G");
+        assertEquals(0, blockStorage.takeBlocks(1).size());
     }
 }

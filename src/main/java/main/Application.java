@@ -5,6 +5,7 @@ import material.BlockStorage;
 import processing.centrifuge.Centrifuge;
 import processing.pl.PL01;
 import processing.pl.PL02;
+import processing.sensor.Sensor;
 
 import java.util.Arrays;
 
@@ -22,7 +23,14 @@ public class Application {
         Utility.logInfo(context, String.format("BlockStorage(%d), Block(%s)", config.numberOfBlocks, Arrays.toString(config.blockSize)));
         Utility.logInfo(context, String.format("Processing %s atoms, ETA: %s seconds", Utility.formatNumber(numberOfAtoms), Utility.formatNumber(timeInSeconds)));
 
-        Worker sam = new Worker(new AcidStorage(), new BlockStorage(), new PL01(new PL02()), new Centrifuge());
+        Sensor sensor = new Sensor();
+        Centrifuge centrifuge = new Centrifuge();
+        sensor.registerObserver(centrifuge);
+        centrifuge.registerObserver(sensor);
+
+        Worker sam = new Worker(new AcidStorage(), new BlockStorage(), new PL01(new PL02()), centrifuge);
+        sensor.registerObserver(sam);
+
         sam.fillAll();
         sam.processBlocks();
     }

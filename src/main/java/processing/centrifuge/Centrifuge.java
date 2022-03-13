@@ -53,8 +53,11 @@ public class Centrifuge implements IObservable, IObserver {
 
     @Override
     public void update(IObservable observable, Object arg) {
-        if (Objects.equals(arg, true)) start();
-        else stop();
+        if (Objects.equals(arg, "start")) {
+            if (config.autoOn) start();
+        } else if (Objects.equals(arg, "stop")) {
+            if (config.autoOff) stop();
+        }
     }
 
     public void turnOn() {
@@ -64,7 +67,7 @@ public class Centrifuge implements IObservable, IObserver {
 
     public void insert(String matter) {
         if (matter != null && !matter.isEmpty()) {
-            if (toProcess.isEmpty() && config.autoOn) notifyObservers(true);
+            if (toProcess.isEmpty()) notifyObservers("filled");
             toProcess.append(matter);
         }
     }
@@ -74,6 +77,8 @@ public class Centrifuge implements IObservable, IObserver {
         if (processTask == null || processTask.isDone()) {
             Utility.logInfo(context, "Starting");
             processTask = controller.scheduleAtFixedRate(this::process, 0, config.centrifugeMsPerIteration, TimeUnit.MILLISECONDS);
+        } else {
+            Utility.logError(context, "Cannot start Centrifuge because it is already running");
         }
     }
 
@@ -89,8 +94,8 @@ public class Centrifuge implements IObservable, IObserver {
             String noGold = goldFilter.apply(noTrash);
             if (!noGold.isEmpty())
                 Utility.logError(context, String.format("Cannot process %s", Utility.analyseMatter(noGold)));
-        } else if (config.autoOff) {
-            notifyObservers(false);
+        } else {
+            notifyObservers("empty");
         }
     }
 
@@ -98,6 +103,9 @@ public class Centrifuge implements IObservable, IObserver {
         if (processTask != null && !processTask.isDone()) {
             Utility.logInfo(context, "Stopping");
             processTask.cancel(false);
+            notifyObservers("stopped");
+        } else {
+            Utility.logError(context, "Cannot stop Centrifuge because it isn't running");
         }
     }
 

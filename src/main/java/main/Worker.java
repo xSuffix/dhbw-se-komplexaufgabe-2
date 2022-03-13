@@ -8,10 +8,7 @@ import processing.filter.IFilter;
 import processing.pl.PL;
 import processing.sensor.IObservable;
 import processing.sensor.IObserver;
-import processing.sensor.Sensor;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class Worker implements IObserver {
@@ -27,11 +24,6 @@ public class Worker implements IObserver {
         this.blockStorage = blockStorage;
         this.productionLine = productionLine;
         this.centrifuge = centrifuge;
-
-        List<IObserver> sensorObservers = new ArrayList<>();
-        sensorObservers.add(centrifuge);
-        sensorObservers.add(this);
-        centrifuge.registerObserver(new Sensor(sensorObservers));
     }
 
     public void fillAll() {
@@ -41,7 +33,7 @@ public class Worker implements IObserver {
 
     public void processBlocks() {
         if (blockStorage.countBlocks() > 0) {
-            System.out.println("");
+            System.out.println();
 
             for (Block b : blockStorage.takeBlocks(config.blocksPerIteration))
                 productionLine.process(b.addChemicalSubstance(acidStorage.takeAcidForBlock()), acidStorage, centrifuge);
@@ -57,12 +49,11 @@ public class Worker implements IObserver {
 
     @Override
     public void update(IObservable observable, Object arg) {
-        // arg = (true: centrifuge was empty and got filled, false: centrifuge was filled and is empty)
-        if (!Objects.equals(arg, true)) processBlocks();
+        if (Objects.equals(arg, "fill")) processBlocks();
     }
 
     public void analyzeFilterContainers() {
-        System.out.println("");
+        System.out.println();
         centrifuge.turnOff();
         StringBuilder filtered = new StringBuilder();
         for (IFilter filter : centrifuge.getFilters()) filtered.append(filter.takeFiltered());
